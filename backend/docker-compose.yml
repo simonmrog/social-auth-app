@@ -1,0 +1,46 @@
+version: "3.7"
+
+services:
+  social-auth-db:
+    image: mongo
+    container_name: social-auth-db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=username
+      - MONGO_INITDB_ROOT_PASSWORD=password
+      - MONGO_INITDB_DATABASE=users
+    volumes:
+      - /data/db
+    ports:
+      - 27019:27017
+    networks:
+      - social-auth-network
+    logging:
+      driver: none
+
+  social-auth-app:
+    build:
+      context: .
+    container_name: social-auth-app
+    command: npm run dev
+    environment:
+      - ENVIRONMENT
+      - MONGO_USERNAME
+      - MONGO_PASSWORD
+      - MONGO_DATABASE_NAME
+      - MONGO_HOST
+      - MONGO_PORT
+      - TWITTER_KEY
+      - TWITTER_SECRET
+      - FACEBOOK_CLIENT_ID
+      - FACEBOOK_SECRET
+    volumes:
+      - ./:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - 4000:3600
+      # - 9229:9229
+    networks:
+      - social-auth-network
+
+networks:
+  social-auth-network:
